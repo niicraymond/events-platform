@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import NavBar from "./components/NavBar";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -8,11 +9,7 @@ import EventDetails from "./pages/EventDetails";
 function App() {
   return (
     <Router>
-      <nav className="p-4 flex gap-4 bg-gray-100">
-        <Link to="/">Home</Link>
-        <Link to="/add-event">Add Event</Link>
-        <Link to="/login">Login</Link>
-      </nav>
+      <NavBar/>
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
