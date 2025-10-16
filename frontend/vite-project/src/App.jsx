@@ -5,16 +5,19 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import AddEvent from "./pages/AddEvent";
 import EventDetails from "./pages/EventDetails";
+import { useState } from "react";
+
 
 function App() {
+  const [refreshEvents, setRefreshEvents] = useState(false);
   return (
     <Router>
       <NavBar/>
       <main>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home refreshEvents={refreshEvents}/>} />
           <Route path="/login" element={<Login/>}/>
-          <Route path="/add-event" element={<AddEvent/>}/>
+          <Route path="/add-event" element={<AddEvent setRefreshEvents={setRefreshEvents}/>}/>
           <Route path="/event/:id" element={<EventDetails/>}/>
         </Routes>
       </main>
