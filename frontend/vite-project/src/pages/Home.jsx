@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 function Home({ refreshEvents }) {
   const [events, setEvents] = useState([]);
@@ -32,12 +33,13 @@ function Home({ refreshEvents }) {
         <div>
           {events.map((event) => (
             <div key={event._id} className="border p-4 rounded mb-4">
-              <h2 className="text-xl font-semibold">{event.title}</h2>
+              <Link to={`/event/${event._id}`}>
+                <h2 className="text-xl font-semibold text-blue-600 hover:underline">
+                  {event.title}
+                </h2>
+              </Link>
               <p>{event.date} • {event.location}</p>
               <p>{event.description}</p>
-              <button className="bg-blue-500 text-white px-3 py-1 rounded mt-2">
-                {event.isPaid ? "Pay Now" : "Sign Up"}
-              </button>
               <hr className="my-3" />
             </div>
           ))}
