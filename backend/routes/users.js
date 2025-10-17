@@ -1,6 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import Event from "../models/Event.js"
 
 const router = express.Router();
 
@@ -62,5 +63,18 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Error logging in" });
   }
 });
+
+
+router.get("/:id/events", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const events = await Event.find({ attendees: id });
+    res.json(events);
+  } catch (err) {
+    console.error("Error fetching user events:", err);
+    res.status(500).json({ message: "Error fetching user's events" });
+  }
+});
+
 
 export default router;

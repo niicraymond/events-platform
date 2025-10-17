@@ -60,6 +60,13 @@ function Navbar() {
           </Link>
         )}
 
+{isLoggedIn && role === "user" && (
+  <Link to="/my-events" className="hover:underline">
+    My Events
+  </Link>
+)}
+
+
         {isLoggedIn && (
           <button
             onClick={handleLogout}

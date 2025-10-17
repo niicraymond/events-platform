@@ -168,13 +168,21 @@ function EventDetails() {
       </p>
       <p className="mb-4">{event.description}</p>
 
-      {event.image && (
+      <div className="mb-6">
         <img
-          src={event.image}
+          src={
+            event.image && event.image.trim() !== ""
+              ? event.image
+              : "https://placehold.co/800x400?text=No+Image"
+          }
           alt={event.title}
-          className="w-full rounded mb-4"
+          className="w-full h-72 object-cover rounded-lg shadow"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "https://placehold.co/800x400?text=Image+Not+Found";
+          }}
         />
-      )}
+      </div>
 
       {userId ? (
         !isUserSignedUp && !hasUserPaid ? (
