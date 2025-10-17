@@ -1,5 +1,7 @@
 import express from "express";
 import Event from "../models/Event.js";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -63,6 +65,37 @@ router.delete("/:id", async (req, res) => {
     res.json({ message: "Event deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting event" });
+  }
+});
+
+// POST /api/events/:id/signup
+router.post("/:id/signup", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+    const event = await Event.findById(req.params.id);
+
+    if (!user || !event) return res.status(404).json({ message: "User or event not found" });
+
+    // Prevent duplicates
+    if (event.attendees.includes(user._id)) {
+      return res.status(400).json({ message: "Already signed up" });
+    }
+
+    // Link user / event
+    event.attendees.push(user._id);
+    user.signedUpEvents.push(event._id);
+
+    await event.save();
+    await user.save();
+
+    res.json({ message: "Signed up successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error signing up" });
   }
 });
 

@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
 const eventSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  date: { type: String, required: true },
-  location: { type: String, required: true },
-  description: { type: String },
-  image: { type: String },
-  isPaid: { type: Boolean, default: false },
+  title: String,
+  date: String,
+  location: String,
+  description: String,
+  image: String,
+  isPaid: Boolean,
+  attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 const Event = mongoose.model("Event", eventSchema);
