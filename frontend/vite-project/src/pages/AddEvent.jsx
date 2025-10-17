@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function AddEvent() {
+function AddEvent({ setRefreshEvents }) { 
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -42,6 +42,8 @@ function AddEvent() {
         image: "",
         isPaid: false,
       });
+
+      setRefreshEvents((prev) => !prev);
     } catch (err) {
       console.error(err);
       setMessage("Error adding event");
