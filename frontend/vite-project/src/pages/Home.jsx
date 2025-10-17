@@ -7,7 +7,8 @@ function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/events");
+        const res = await fetch("https://events-platform-4muy.onrender.com/api/...")
+        ;
         const data = await res.json();
         setEvents(data);
       } catch (err) {

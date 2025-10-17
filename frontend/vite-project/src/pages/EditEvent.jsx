@@ -18,7 +18,9 @@ function EditEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/events/${id}`);
+        const res = await fetch(
+          `https://events-platform-4muy.onrender.com/api/events/${id}`
+        );
         const data = await res.json();
         setFormData(data);
       } catch (err) {
@@ -41,7 +43,7 @@ function EditEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:3000/api/events/${id}`, {
+      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

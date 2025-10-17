@@ -8,11 +8,12 @@ function EventDetails() {
   const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
+  const role = localStorage.getItem("role");
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/events/${id}`);
+        const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`);
         const data = await res.json();
         setEvent(data);
       } catch (err) {
@@ -29,7 +30,7 @@ function EventDetails() {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/events/${id}`, {
+      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -53,7 +54,7 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/events/${id}/signup`, {
+      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -80,7 +81,7 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/events/${id}/pay`, {
+      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -109,14 +110,11 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/events/${id}/unsignup`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId }),
-        }
-      );
+      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/unsignup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
@@ -138,8 +136,7 @@ function EventDetails() {
     const startDate = event.date.replace(/-/g, "");
     const endDate = startDate;
 
-    const baseUrl =
-      "https://calendar.google.com/calendar/render?action=TEMPLATE";
+    const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
     const params = new URLSearchParams({
       text: event.title,
       dates: `${startDate}/${endDate}`,
@@ -155,10 +152,7 @@ function EventDetails() {
 
   const isUserSignedUp = event.attendees?.includes(userId);
   const hasUserPaid = event.paidUsers?.includes(userId);
-  const canShowCalendar =
-    (event.isPaid && hasUserPaid) || (!event.isPaid && isUserSignedUp);
-
-  const role = localStorage.getItem("role");
+  const canShowCalendar = (event.isPaid && hasUserPaid) || (!event.isPaid && isUserSignedUp);
 
   return (
     <div className="p-6 max-w-lg mx-auto border rounded">
@@ -168,21 +162,15 @@ function EventDetails() {
       </p>
       <p className="mb-4">{event.description}</p>
 
-      <div className="mb-6">
-        <img
-          src={
-            event.image && event.image.trim() !== ""
-              ? event.image
-              : "https://placehold.co/800x400?text=No+Image"
-          }
-          alt={event.title}
-          className="w-full h-72 object-cover rounded-lg shadow"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://placehold.co/800x400?text=Image+Not+Found";
-          }}
-        />
-      </div>
+      {event.image && (
+        <div className="mb-6">
+          <img
+            src={event.image}
+            alt={event.title}
+            className="w-full h-72 object-cover rounded-lg shadow"
+          />
+        </div>
+      )}
 
       {userId ? (
         !isUserSignedUp && !hasUserPaid ? (

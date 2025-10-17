@@ -25,7 +25,7 @@ function AddEvent({ setRefreshEvents }) {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:3000/api/events", {
+      const res = await fetch("https://events-platform-4muy.onrender.com/api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

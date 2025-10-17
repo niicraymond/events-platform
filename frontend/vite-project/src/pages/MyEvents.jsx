@@ -14,7 +14,7 @@ function MyEvents() {
 
     const fetchMyEvents = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/users/${userId}/events`);
+        const res = await fetch(`https://events-platform-4muy.onrender.com/api/users/${userId}/events`);
         const data = await res.json();
         setEvents(data);
       } catch (err) {
