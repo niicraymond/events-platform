@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function AddEvent({ setRefreshEvents }) { 
+function AddEvent({ setRefreshEvents }) {
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -27,7 +27,11 @@ function AddEvent({ setRefreshEvents }) {
     try {
       const res = await fetch("http://localhost:3000/api/events", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+
         body: JSON.stringify(formData),
       });
 

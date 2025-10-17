@@ -8,6 +8,7 @@ const eventSchema = new mongoose.Schema({
   image: String,
   isPaid: Boolean,
   attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  paidUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
 const Event = mongoose.model("Event", eventSchema);

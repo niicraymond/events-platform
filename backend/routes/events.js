@@ -2,6 +2,7 @@ import express from "express";
 import Event from "../models/Event.js";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { protect, staffOnly } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -28,8 +29,8 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST new event
-router.post("/", async (req, res) => {
+// POST new event (staff only)
+router.post("/", protect, staffOnly, async (req, res) => {
   try {
     const newEvent = new Event(req.body);
     await newEvent.save();
@@ -39,8 +40,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-// PUT update event
-router.put("/:id", async (req, res) => {
+// PUT update event (staff only)
+router.put("/:id", protect, staffOnly, async (req, res) => {
   try {
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -55,8 +56,8 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// DELETE event
-router.delete("/:id", async (req, res) => {
+// DELETE event (staff only)
+router.delete("/:id", protect, staffOnly, async (req, res) => {
   try {
     const deletedEvent = await Event.findByIdAndDelete(req.params.id);
     if (!deletedEvent) {
@@ -71,31 +72,64 @@ router.delete("/:id", async (req, res) => {
 // POST /api/events/:id/signup
 router.post("/:id/signup", async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided" });
+    const { id } = req.params;
+    const { userId } = req.body;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-    const event = await Event.findById(req.params.id);
+    const event = await Event.findById(id);
+    const user = await User.findById(userId);
 
-    if (!user || !event) return res.status(404).json({ message: "User or event not found" });
+    if (!event || !user)
+      return res.status(404).json({ message: "Event or user not found" });
 
-    // Prevent duplicates
-    if (event.attendees.includes(user._id)) {
-      return res.status(400).json({ message: "Already signed up" });
-    }
+    if (event.attendees.includes(userId))
+      return res.status(400).json({ message: "Already signed up for this event" });
 
-    // Link user / event
-    event.attendees.push(user._id);
-    user.signedUpEvents.push(event._id);
+    event.attendees.push(userId);
+    user.signedUpEvents.push(id);
 
     await event.save();
     await user.save();
 
-    res.json({ message: "Signed up successfully!" });
+    res.json({ message: "Signed up successfully", event });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error signing up" });
+  }
+});
+
+// POST /api/events/:id/pay
+router.post("/:id/pay", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = "68f26134633f2765b41eedd8"; 
+
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Prevent duplicate payment
+    if (event.paidUsers?.includes(userId)) {
+      return res.status(400).json({ message: "You have already paid for this event." });
+    }
+
+    event.paidUsers = event.paidUsers || [];
+    event.paidUsers.push(userId);
+
+    // Also sign the user up when they pay
+    if (!event.attendees.includes(userId)) {
+      event.attendees.push(userId);
+      const user = await User.findById(userId);
+      if (user && !user.signedUpEvents.includes(id)) {
+        user.signedUpEvents.push(id);
+        await user.save();
+      }
+    }
+
+    await event.save();
+
+    res.json({ message: "Payment successful! You are now signed up.", event });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error processing payment" });
   }
 });
 
