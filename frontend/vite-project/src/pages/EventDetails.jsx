@@ -73,12 +73,21 @@ function EventDetails() {
           {event.isPaid ? "Pay Now" : "Sign Up"}
         </button>
 
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-        >
-          Delete Event
-        </button>
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={() => navigate(`/edit-event/${id}`)}
+            className="bg-yellow-500 text-white px-4 py-2 rounded"
+          >
+            Edit Event
+          </button>
+
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded"
+          >
+            Delete Event
+          </button>
+        </div>
       </div>
     </div>
   );
