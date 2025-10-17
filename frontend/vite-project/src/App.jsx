@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import AddEvent from "./pages/AddEvent";
 import EventDetails from "./pages/EventDetails";
 import EditEvent from "./pages/EditEvent";
+import Register from "./pages/Register";
 import { useState } from "react";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           />
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/edit-event/:id" element={<EditEvent />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
     </Router>

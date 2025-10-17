@@ -26,6 +26,9 @@ function Login() {
       localStorage.setItem("role", data.role);
       localStorage.setItem("userId", data.userId);
 
+      window.dispatchEvent(new Event("auth-change"));
+
+
       setMessage("Login successful!");
       navigate("/"); 
     } catch (err) {

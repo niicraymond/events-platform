@@ -24,6 +24,7 @@ function EventDetails() {
 
     fetchEvent();
   }, [id]);
+
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
 
@@ -101,6 +102,38 @@ function EventDetails() {
     }
   };
 
+  const handleUnsignup = async () => {
+    if (!userId) {
+      alert("You must be logged in to unsign from this event.");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:3000/api/events/${id}/unsignup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId }),
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
+
+      alert("You have been unsigned from this event.");
+
+      setEvent((prev) => ({
+        ...prev,
+        attendees: prev.attendees?.filter((a) => a !== userId),
+        paidUsers: prev.paidUsers?.filter((a) => a !== userId),
+      }));
+    } catch (err) {
+      console.error(err);
+      alert("Error unsigning from event");
+    }
+  };
+
   const generateGoogleCalendarLink = (event) => {
     const startDate = event.date.replace(/-/g, "");
     const endDate = startDate;
@@ -124,6 +157,8 @@ function EventDetails() {
   const hasUserPaid = event.paidUsers?.includes(userId);
   const canShowCalendar =
     (event.isPaid && hasUserPaid) || (!event.isPaid && isUserSignedUp);
+
+  const role = localStorage.getItem("role");
 
   return (
     <div className="p-6 max-w-lg mx-auto border rounded">
@@ -159,11 +194,19 @@ function EventDetails() {
             </button>
           )
         ) : (
-          <p className="text-green-600 font-semibold">
-            {event.isPaid
-              ? "Payment successful! You’re signed up!"
-              : "You’re signed up for this event!"}
-          </p>
+          <div>
+            <p className="text-green-600 font-semibold mb-2">
+              {event.isPaid
+                ? "Payment successful! You’re signed up!"
+                : "You’re signed up for this event!"}
+            </p>
+            <button
+              onClick={handleUnsignup}
+              className="bg-gray-600 text-white px-4 py-2 rounded"
+            >
+              Unsign from Event
+            </button>
+          </div>
         )
       ) : (
         <p className="text-red-500 font-semibold">
@@ -182,7 +225,7 @@ function EventDetails() {
         </a>
       )}
 
-      {localStorage.getItem("role") === "staff" && (
+      {role === "staff" && (
         <button
           onClick={handleDelete}
           className="bg-red-500 text-white px-4 py-2 rounded mt-3 block"

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-function Home({ refreshEvents }) {
+function Home() {
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -13,38 +12,52 @@ function Home({ refreshEvents }) {
         setEvents(data);
       } catch (err) {
         console.error("Error fetching events:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchEvents();
-  }, [refreshEvents]);
-
-  if (loading) return <p>Loading events...</p>;
+  }, []);
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">Community Events</h1>
 
-      {events.length === 0 ? (
-        <p>No events found.</p>
-      ) : (
-        <div>
-          {events.map((event) => (
-            <div key={event._id} className="border p-4 rounded mb-4">
-              <Link to={`/event/${event._id}`}>
-                <h2 className="text-xl font-semibold text-blue-600 hover:underline">
-                  {event.title}
-                </h2>
-              </Link>
-              <p>{event.date} • {event.location}</p>
-              <p>{event.description}</p>
-              <hr className="my-3" />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {events.map((event) => (
+          <div
+            key={event._id}
+            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition"
+          >
+            {event.image && (
+              <img
+                src={event.image}
+                alt={event.title}
+                className="w-full h-40 object-cover rounded mb-3"
+              />
+            )}
+            <h2 className="text-xl font-bold mb-2">{event.title}</h2>
+            <p className="text-gray-600 mb-1">
+              {event.date} • {event.location}
+            </p>
+            <p className="text-sm mb-2">{event.description?.slice(0, 80)}...</p>
+
+            <p className="font-semibold mb-2">
+              {event.isPaid ? "Paid Event" : "Free Event"}
+            </p>
+
+            <p className="text-gray-500 text-sm mb-3">
+              👥 {event.attendees?.length || 0} attending
+            </p>
+
+            <Link
+              to={`/event/${event._id}`}
+              className="bg-blue-500 text-white px-4 py-2 rounded inline-block"
+            >
+              See More
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

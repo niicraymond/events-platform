@@ -43,10 +43,14 @@ router.post("/", protect, staffOnly, async (req, res) => {
 // PUT update event (staff only)
 router.put("/:id", protect, staffOnly, async (req, res) => {
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedEvent = await Event.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
     if (!updatedEvent) {
       return res.status(404).json({ message: "Event not found" });
     }
@@ -75,25 +79,73 @@ router.post("/:id/signup", async (req, res) => {
     const { id } = req.params;
     const { userId } = req.body;
 
+    console.log("Signup attempt:", { id, userId });
+
     const event = await Event.findById(id);
-    const user = await User.findById(userId);
+    if (!event) {
+      console.log("Event not found");
+      return res.status(404).json({ message: "Event not found" });
+    }
 
-    if (!event || !user)
-      return res.status(404).json({ message: "Event or user not found" });
+    if (!userId) {
+      console.log("Missing userId");
+      return res.status(400).json({ message: "Missing user ID" });
+    }
 
-    if (event.attendees.includes(userId))
-      return res.status(400).json({ message: "Already signed up for this event" });
+    // Already signed up check
+    if (event.attendees.includes(userId)) {
+      console.log("⚠️ Already signed up");
+      return res.status(400).json({ message: "Already signed up" });
+    }
+
+    // Prevent free users from signing up to paid events
+    if (event.isPaid) {
+      console.log("⚠️ Paid event requires payment");
+      return res.status(400).json({ message: "This is a paid event — please use Pay Now." });
+    }
 
     event.attendees.push(userId);
-    user.signedUpEvents.push(id);
+    await event.save();
+
+    console.log("Signup successful for event:", event.title);
+
+    res.json({ message: "Signed up successfully!", event });
+  } catch (err) {
+    console.error("Error signing up for event:", err);
+    res.status(500).json({ message: "Error signing up for event" });
+  }
+});
+
+
+// POST /api/events/:id/unsignup
+router.post("/:id/unsignup", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Check if user is signed up
+    const userIndex = event.attendees.indexOf(userId);
+    if (userIndex === -1) {
+      return res
+        .status(400)
+        .json({ message: "You are not signed up for this event." });
+    }
+
+    // Remove user from attendees and paidUsers 
+    event.attendees.splice(userIndex, 1);
+    event.paidUsers = event.paidUsers.filter(
+      (paidUserId) => paidUserId.toString() !== userId
+    );
 
     await event.save();
-    await user.save();
 
-    res.json({ message: "Signed up successfully", event });
+    res.json({ message: "You have been unsigned from this event.", event });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error signing up" });
+    res.status(500).json({ message: "Error unsigning from event" });
   }
 });
 
@@ -101,14 +153,16 @@ router.post("/:id/signup", async (req, res) => {
 router.post("/:id/pay", async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = "68f26134633f2765b41eedd8"; 
+    const { userId } = req.body;
 
     const event = await Event.findById(id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
     // Prevent duplicate payment
     if (event.paidUsers?.includes(userId)) {
-      return res.status(400).json({ message: "You have already paid for this event." });
+      return res
+        .status(400)
+        .json({ message: "You have already paid for this event." });
     }
 
     event.paidUsers = event.paidUsers || [];
