@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_BASE } from "../config";
 
 function AddEvent({ setRefreshEvents }) {
   const [formData, setFormData] = useState({
@@ -25,13 +26,12 @@ function AddEvent({ setRefreshEvents }) {
     setMessage("");
 
     try {
-      const res = await fetch("https://events-platform-4muy.onrender.com/api/events", {
+      const res = await fetch(`${API_BASE}/api/events`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-
         body: JSON.stringify(formData),
       });
 

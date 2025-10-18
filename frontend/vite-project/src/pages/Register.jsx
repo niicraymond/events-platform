@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -20,7 +21,7 @@ function Register() {
     setMessage("");
 
     try {
-      const res = await fetch("https://events-platform-4muy.onrender.com/api/users/register", {
+      const res = await fetch(`${API_BASE}/api/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

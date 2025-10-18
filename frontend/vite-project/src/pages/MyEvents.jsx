@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function MyEvents() {
   const [events, setEvents] = useState([]);
@@ -14,7 +15,7 @@ function MyEvents() {
 
     const fetchMyEvents = async () => {
       try {
-        const res = await fetch(`https://events-platform-4muy.onrender.com/api/users/${userId}/events`);
+        const res = await fetch(`${API_BASE}/api/users/${userId}/events`);
         const data = await res.json();
         setEvents(data);
       } catch (err) {

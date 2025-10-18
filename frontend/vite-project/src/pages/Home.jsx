@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function Home() {
   const [events, setEvents] = useState([]);
@@ -7,8 +8,7 @@ function Home() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("https://events-platform-4muy.onrender.com/api/...")
-        ;
+        const res = await fetch(`${API_BASE}/api/events`);
         const data = await res.json();
         setEvents(data);
       } catch (err) {
@@ -30,22 +30,22 @@ function Home() {
             className="border rounded-lg p-4 shadow-sm hover:shadow-md transition"
           >
             {event.image && (
-            <div className="h-40 overflow-hidden rounded mb-3 bg-gray-100">
-            <img
-              src={
-                event.image && event.image.trim() !== ""
-                  ? event.image
-                  : "https://placehold.co/400x200?text=No+Image"
-              }
-              alt={event.title}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://placehold.co/400x200?text=Image+Not+Found";
-              }}
-            />
-          </div>
-          
+              <div className="h-40 overflow-hidden rounded mb-3 bg-gray-100">
+                <img
+                  src={
+                    event.image && event.image.trim() !== ""
+                      ? event.image
+                      : "https://placehold.co/400x200?text=No+Image"
+                  }
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://placehold.co/400x200?text=Image+Not+Found";
+                  }}
+                />
+              </div>
             )}
             <h2 className="text-xl font-bold mb-2">{event.title}</h2>
             <p className="text-gray-600 mb-1">

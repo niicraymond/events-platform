@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { API_BASE } from "../config";
 
 function EventDetails() {
   const { id } = useParams();
@@ -13,7 +14,7 @@ function EventDetails() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`);
+        const res = await fetch(`${API_BASE}/api/events/${id}`);
         const data = await res.json();
         setEvent(data);
       } catch (err) {
@@ -30,7 +31,7 @@ function EventDetails() {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
 
     try {
-      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`, {
+      const res = await fetch(`${API_BASE}/api/events/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -54,7 +55,7 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/signup`, {
+      const res = await fetch(`${API_BASE}/api/events/${id}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -81,7 +82,7 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/pay`, {
+      const res = await fetch(`${API_BASE}/api/events/${id}/pay`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),
@@ -110,7 +111,7 @@ function EventDetails() {
     }
 
     try {
-      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}/unsignup`, {
+      const res = await fetch(`${API_BASE}/api/events/${id}/unsignup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId }),

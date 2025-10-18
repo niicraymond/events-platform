@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function EditEvent() {
   const { id } = useParams();
@@ -18,9 +19,7 @@ function EditEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(
-          `https://events-platform-4muy.onrender.com/api/events/${id}`
-        );
+        const res = await fetch(`${API_BASE}/api/events/${id}`);
         const data = await res.json();
         setFormData(data);
       } catch (err) {
@@ -43,13 +42,12 @@ function EditEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`https://events-platform-4muy.onrender.com/api/events/${id}`, {
+      const res = await fetch(`${API_BASE}/api/events/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-
         body: JSON.stringify(formData),
       });
 

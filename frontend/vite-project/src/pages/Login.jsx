@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../config";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ function Login() {
     setMessage("");
 
     try {
-      const res = await fetch("https://events-platform-4muy.onrender.com/api/users/login", {
+      const res = await fetch(`${API_BASE}/api/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -28,9 +29,8 @@ function Login() {
 
       window.dispatchEvent(new Event("auth-change"));
 
-
       setMessage("Login successful!");
-      navigate("/"); 
+      navigate("/");
     } catch (err) {
       setMessage(err.message);
     }
